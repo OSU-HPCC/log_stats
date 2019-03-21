@@ -2,6 +2,9 @@ library("shiny")
 library("tidyverse")
 library("RSQLite")
 
+# Update database with new logs since last run
+source("read_logs.R")
+
 # Connect to database
 db = dbConnect(SQLite(), dbname="logs.db")
 
