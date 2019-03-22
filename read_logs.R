@@ -21,3 +21,12 @@ for(type in log_types){
                                        format("%Y-%m-%d"))
 }
 
+# Open database connection
+db = dbConnect(SQLite(), dbname="logs.db")
+
+# Read the database and remove filesnames that
+# have already been entered into the database
+
+
+# Close database connection
+dbDisconnect(db)
