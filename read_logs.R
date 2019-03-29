@@ -35,5 +35,10 @@ for(type in log_types){
   log_files <- log_files %>% filter(!(log_type ==  type & (day %in% already_there$day)))
 }
 
+# Write new files to appropriate tables in database
+for(row in 1:nrow(log_files)){
+  write_log(db, log_files[row,])
+}
+
 # Close database connection
 dbDisconnect(db)
