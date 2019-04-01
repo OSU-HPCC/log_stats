@@ -36,7 +36,7 @@ for(type in log_types){
 }
 
 # Write new files to appropriate tables in database
-if(dim(log_files)[1] == 0){
+if(dim(log_files)[1] > 0){
   for(row in 1:nrow(log_files)){
     write_log(db, log_files[row,])
   }
