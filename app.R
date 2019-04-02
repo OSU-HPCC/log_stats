@@ -27,13 +27,13 @@ ui <- fluidPage(
       # Select box for looking at either projects or users
       selectInput(inputId = "which_table", label = "Log", 
                   choices = gsub("_", " ", log_types)),
-      # Check boxes for picking users/projects
-      conditionalPanel( condition = "input.which_table == 'Projects'",
+      # Project storage
+      conditionalPanel( condition = "input.which_table == 'project'",
                         radioButtons(inputId = "selectProject",
                                      label = "Project",
                                      choices = unique(unlist(dbGetQuery(db, 
                                                                         "SELECT project FROM project"), use.names = F)))),
-      conditionalPanel( condition = "input.which_table == 'Users'",
+      conditionalPanel( condition = "input.which_table == 'project users'",
                         radioButtons(inputId = "selectUsers",
                                      label = "Users",
                                      choices = unique(unlist(dbGetQuery(db, 
@@ -64,7 +64,7 @@ server <- function(input, output, session) {
     end_date <- input$dates[2]
     
     # Projects data
-    if(input$which_table == "Projects"){
+    if(input$which_table == "project"){
       plt_data <- as_tibble(dbGetQuery(db, "SELECT project, used, hard, day FROM project")) %>% 
         mutate(day = as.Date(day, format="%Y-%m-%d")) %>% 
         filter(project %in% input$selectProject) %>% 
@@ -73,7 +73,7 @@ server <- function(input, output, session) {
     }
     
     # Project data by user
-    if(input$which_table == "Users"){
+    if(input$which_table == "project users"){
       plt_data <- as_tibble(dbGetQuery(db, "SELECT user AS project, used, hard, day FROM project_users")) %>% 
         mutate(day = as.Date(day, format="%Y-%m-%d")) %>% 
         filter(project %in% input$selectUsers) %>% 
@@ -96,7 +96,7 @@ server <- function(input, output, session) {
   })
   
   # Functionality to save a picture of the graph
-  output$download <- downloadHandler(filename = "project_quota.png",
+  output$download <- downloadHandler(filename = "log_graph.png",
                                      content = function(file){
                                        ggsave(file, device = "png")
                                      },
