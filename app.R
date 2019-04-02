@@ -16,7 +16,7 @@ unit_choices <- c("Kilobytes (kB)", "Megabytes (MB)", "Gigabytes (GB)",
 ui <- fluidPage(
   
   # Application title
-  titlePanel("Storage Quotas"),
+  titlePanel("Log Data"),
   
   # Sidebar with a slider with input
   sidebarLayout(
