@@ -23,21 +23,21 @@ ui <- fluidPage(
     sidebarPanel(
       # Date range to track usage
       dateRangeInput(inputId = "dates", label = "Date Range", start = "2019-02-14",
-                     end = as_tibble(dbGetQuery(db, "SELECT MAX(day) FROM project_quotas"))$`MAX(day)`),
+                     end = as_tibble(dbGetQuery(db, "SELECT MAX(day) FROM project"))$`MAX(day)`),
       # Select box for looking at either projects or users
-      selectInput(inputId = "which_table", label = "Projects or Users?", 
-                  choices = c("Projects", "Users")),
+      selectInput(inputId = "which_table", label = "Log", 
+                  choices = gsub("_", " ", log_types)),
       # Check boxes for picking users/projects
       conditionalPanel( condition = "input.which_table == 'Projects'",
                         radioButtons(inputId = "selectProject",
                                      label = "Project",
                                      choices = unique(unlist(dbGetQuery(db, 
-                                                                        "SELECT project FROM project_quotas"), use.names = F)))),
+                                                                        "SELECT project FROM project"), use.names = F)))),
       conditionalPanel( condition = "input.which_table == 'Users'",
                         radioButtons(inputId = "selectUsers",
                                      label = "Users",
                                      choices = unique(unlist(dbGetQuery(db, 
-                                                                        "SELECT user FROM user_quotas"), use.names = F))))
+                                                                        "SELECT user FROM project_users"), use.names = F))))
     ),
     
     # Show a plot of the generated distribution
@@ -65,16 +65,16 @@ server <- function(input, output, session) {
     
     # Projects data
     if(input$which_table == "Projects"){
-      plt_data <- as_tibble(dbGetQuery(db, "SELECT project, used, hard, day FROM project_quotas")) %>% 
+      plt_data <- as_tibble(dbGetQuery(db, "SELECT project, used, hard, day FROM project")) %>% 
         mutate(day = as.Date(day, format="%Y-%m-%d")) %>% 
         filter(project %in% input$selectProject) %>% 
         filter(day >= start_date & day <= end_date)
       plt_title <- input$selectProject
     }
     
-    # User data
+    # Project data by user
     if(input$which_table == "Users"){
-      plt_data <- as_tibble(dbGetQuery(db, "SELECT user AS project, used, hard, day FROM user_quotas")) %>% 
+      plt_data <- as_tibble(dbGetQuery(db, "SELECT user AS project, used, hard, day FROM project_users")) %>% 
         mutate(day = as.Date(day, format="%Y-%m-%d")) %>% 
         filter(project %in% input$selectUsers) %>% 
         filter(day >= start_date & day <= end_date)
