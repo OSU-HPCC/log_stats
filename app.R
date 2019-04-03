@@ -60,7 +60,7 @@ server <- function(input, output, session) {
   observe({
     switch(input$which_table,
            project = source("app_project.R", local = T),
-           project_users = source("app_project-user.R", local = T),
+           project_users = source("app_project_users.R", local = T),
            scratch = source("app_scratch.R", local = T)
     )
   })

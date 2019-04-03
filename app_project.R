@@ -1,4 +1,6 @@
 # App backend for project log data
+
+# Change date selection for appropriate table
 updateDateRangeInput(session = session, inputId = "dates",
-                     start = "2019-04-03",
-                     end = "2019-04-03")
+                     start = as_tibble(dbGetQuery(db, "SELECT MIN(day) FROM project"))$`MIN(day)`,
+                     end = as_tibble(dbGetQuery(db, "SELECT MAX(day) FROM project"))$`MAX(day)`)
