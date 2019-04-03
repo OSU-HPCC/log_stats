@@ -32,6 +32,7 @@ ui <- fluidPage(
                                      label = "Project",
                                      choices = unique(unlist(dbGetQuery(db, 
                                                                         "SELECT project FROM project"), use.names = F)))),
+      # Project storage by user
       conditionalPanel( condition = "input.which_table == 'project_users'",
                         radioButtons(inputId = "selectUsers",
                                      label = "Users",
@@ -55,51 +56,16 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
-  # Pick the appropriate date range
+  # Pick the log type
   observe({
     switch(input$which_table,
+           # Project logs
            project = source("app_project.R", local = T),
+           # Project logs by user
            project_users = source("app_project_users.R", local = T),
+           # Scratch logs
            scratch = source("app_scratch.R", local = T)
     )
-  })
-  
-  # Render plots 
-  output$quotas <- renderPlot({
-    # Get dates
-    start_date <- input$dates[1]
-    end_date <- input$dates[2]
-    
-    # Projects data
-    if(input$which_table == "project"){
-      plt_data <- as_tibble(dbGetQuery(db, "SELECT project, used, hard, day FROM project")) %>% 
-        mutate(day = as.Date(day, format="%Y-%m-%d")) %>% 
-        filter(project %in% input$selectProject) %>% 
-        filter(day >= start_date & day <= end_date)
-      plt_title <- input$selectProject
-    }
-    
-    # Project data by user
-    if(input$which_table == "project_users"){
-      plt_data <- as_tibble(dbGetQuery(db, "SELECT user AS project, used, hard, day FROM project_users")) %>% 
-        mutate(day = as.Date(day, format="%Y-%m-%d")) %>% 
-        filter(project %in% input$selectUsers) %>% 
-        filter(day >= start_date & day <= end_date)
-      plt_title <- input$selectUsers
-    }
-    
-    # Gather the data so usage and quota can be plotted together
-    # Convert from bytes to selected unit
-    unit_exp <- match(input$units, unit_choices)
-    plt_data <- gather(plt_data, used:hard, key="QuotavUsage", value="usage") %>% 
-      mutate(QuotavUsage = gsub("hard", "quota", QuotavUsage),
-             usage = usage / 1000^unit_exp)
-    
-    # Plot the data as a time series
-    ggplot(data = plt_data) + 
-      geom_line(mapping = aes(x = day, y = usage, color = QuotavUsage)) +
-      labs(x = "Date", y = input$units, color = "") +
-      ggtitle(paste(plt_title, "Storage Usage Over Time", sep = " - "))
   })
   
   # Functionality to save a picture of the graph
