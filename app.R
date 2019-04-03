@@ -44,9 +44,12 @@ ui <- fluidPage(
     mainPanel(
       # Plot
       plotOutput("quotas"),
-      # Select Units
-      selectInput(inputId = "units", label = "Usage Units", 
-                  choices = unit_choices, selected = "Megabytes (MB)"),
+      # User can change units for plots where that is useful
+      conditionalPanel( condition = "input.which_table == 'project' ||
+                        input.which_table == 'project_users' ||
+                        input.which_table == 'scratch'",
+                        selectInput(inputId = "units", label = "Usage Units", 
+                                    choices = unit_choices, selected = "Megabytes (MB)")),
       # Download button
       downloadButton(outputId = "download", label = "Download")
       
