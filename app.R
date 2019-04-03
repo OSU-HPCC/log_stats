@@ -22,8 +22,7 @@ ui <- fluidPage(
   sidebarLayout(
     sidebarPanel(
       # Date range to track usage
-      dateRangeInput(inputId = "dates", label = "Date Range", start = "2019-02-14",
-                     end = as_tibble(dbGetQuery(db, "SELECT MAX(day) FROM project"))$`MAX(day)`),
+      dateRangeInput(inputId = "dates", label = "Date Range"),
       # Select box for looking at either projects or users
       selectInput(inputId = "which_table", label = "Log", 
                   choices = log_types),
