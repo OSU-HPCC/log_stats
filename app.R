@@ -78,6 +78,9 @@ server <- function(input, output, session) {
                                      },
                                      contentType = "image/png"
   )
+  
+  # Close database connection when app closes
+  session$onSessionEnded(function(){dbDisconnect(db)})
 }
 
 # Run the application 
