@@ -26,14 +26,14 @@ ui <- fluidPage(
                      end = as_tibble(dbGetQuery(db, "SELECT MAX(day) FROM project"))$`MAX(day)`),
       # Select box for looking at either projects or users
       selectInput(inputId = "which_table", label = "Log", 
-                  choices = gsub("_", " ", log_types)),
+                  choices = log_types),
       # Project storage
       conditionalPanel( condition = "input.which_table == 'project'",
                         radioButtons(inputId = "selectProject",
                                      label = "Project",
                                      choices = unique(unlist(dbGetQuery(db, 
                                                                         "SELECT project FROM project"), use.names = F)))),
-      conditionalPanel( condition = "input.which_table == 'project users'",
+      conditionalPanel( condition = "input.which_table == 'project_users'",
                         radioButtons(inputId = "selectUsers",
                                      label = "Users",
                                      choices = unique(unlist(dbGetQuery(db, 
@@ -56,6 +56,14 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
+  # Pick the appropriate date range
+  observe({
+    switch(input$which_table,
+           project = source("app_project.R", local = T),
+           project_users = source("app_project-user.R", local = T),
+           scratch = source("app_scratch.R", local = T)
+    )
+  })
   
   # Render plots 
   output$quotas <- renderPlot({
@@ -73,7 +81,7 @@ server <- function(input, output, session) {
     }
     
     # Project data by user
-    if(input$which_table == "project users"){
+    if(input$which_table == "project_users"){
       plt_data <- as_tibble(dbGetQuery(db, "SELECT user AS project, used, hard, day FROM project_users")) %>% 
         mutate(day = as.Date(day, format="%Y-%m-%d")) %>% 
         filter(project %in% input$selectUsers) %>% 

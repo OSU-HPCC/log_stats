@@ -1,3 +1,5 @@
+# Reads logs and updates the database to reflect
+# new logs each time the app is run
 library("tidyverse")
 library("RSQLite")
 source("functions.R")
