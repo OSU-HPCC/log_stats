@@ -19,7 +19,6 @@ output$quotas <- renderPlot({
     filter(day >= start_date & day <= end_date)
   plt_title <- input$selectUsers
   
-  # Gather the data so usage and quota can be plotted together
   # Convert from bytes to selected unit
   unit_exp <- match(input$units, unit_choices)
   plt_data <- plt_data %>% mutate(used = used / 1000^unit_exp)

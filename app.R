@@ -37,7 +37,13 @@ ui <- fluidPage(
                         radioButtons(inputId = "selectUsers",
                                      label = "Users",
                                      choices = unique(unlist(dbGetQuery(db, 
-                                                                        "SELECT user FROM project_users"), use.names = F))))
+                                                                        "SELECT user FROM project_users"), use.names = F)))),
+      # Scratch usage
+      conditionalPanel( condition = "input.which_table =='scratch'",
+                        radioButtons(inputId = "scratch",
+                                     label = "Users",
+                                     choices = unique(unlist(dbGetQuery(db,
+                                                                        "SELECT user FROM scratch"), use.names = F))))
     ),
     
     # Show a plot of the generated distribution
